@@ -1,0 +1,255 @@
+@(t:String,infos: Seq[db.model.TargetTable])(implicit request: RequestHeader)
+
+@main("目标表") {
+    <img src="@routes.Assets.at("img/null.png")" width="1" height="20" />
+    <button id="addEntity" class="layui-btn layui-btn-xs layui-btn-normal">
+        <i class="layui-icon">&#xe61f;</i> 实体
+    </button>
+    <button id="addEvent" class="layui-btn layui-btn-xs layui-btn-warm">
+        <i class="layui-icon">&#xe61f;</i> 事件
+    </button>
+    <button id="addRelation" class="layui-btn layui-btn-xs  layui-btn-danger">
+        <i class="layui-icon">&#xe61f;</i> 关系
+    </button>
+    <table class="layui-table" lay-data="{id:'tar'}" lay-filter="tar">
+        <thead>
+            <tr>
+                <th lay-data="{type:'checkbox'}"></th>
+                <th lay-data="{fixed: 'right', width:60, align:'center', toolbar: '#del'}">操作</th>
+                <th lay-data="{field:'id', width:80,sort: true}">ID</th>
+                <th lay-data="{field:'enName', width:130, edit: 'text'}">目标表英文名</th>
+                <th lay-data="{field:'cnName', edit: 'text',Width: 130}">目标表中文名</th>
+                <th lay-data="{field:'ttype', width:130}">目标表类型</th>
+                <th lay-data="{field:'isInited',Width: 100}">初始化</th>
+                <th lay-data="{field:'isCalc',Width: 100}">纳入计算</th>
+                <th lay-data="{field:'isWaitUpdate',Width: 100}">可更新</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        @for(info <- infos) {
+            @if(info.ttpye == t) {
+                <tr>
+                    <td lay-data="{type:'checkbox'}"></td>
+                    <td lay-data="{fixed: 'right', width:60, align:'center', toolbar: '#del'}"></td>
+                    <td>@{
+                        info.id
+                    }</td>
+                    <td><a href="/showInfo/ta/@{info.id}?tn=@{info.cnName}&t=@{info.ttpye}" ><span style="color: #2232f5;">@{info.enName}</span></a></td>
+                    <td>@{
+                        info.cnName
+                    }</td>
+                    <td>@{
+                        info.ttpye
+                    }</td>
+                    <td>@{
+                        info.isInited
+                    }</td>
+                    <td>@{
+                        info.isCalc
+                    }</td>
+                    <td>@{
+                        info.isWaitUpdate
+                    }</td>
+                </tr>
+
+            }
+        }
+        </tbody>
+    </table>
+
+    <script type="text/html" id="del">
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="del"><i class="layui-icon"></i></a>
+    </script>
+
+    <script>
+            layui.use('layer', function(){
+                var layer = layui.layer;
+
+                $('#addEntity').on('click', function(){
+                    layer.open({
+                        type: 1,
+                        area: ['400px', '239px'],
+                        shadeClose: true, //点击遮罩关闭
+                        content: '\<\div style="padding:20px;">' +
+                        '<form class="layui-form" action="/addEntity" method="post">' +
+                        '\<\div class="layui-form-item">' +
+                        '\<\div class="layui-inline">' +
+                        '\<\label class="layui-form-label">实体英文名\<\/label>' +
+                        '\<\div class="layui-input-inline">'+
+                        '\<\input type="text" name="enName" lay-verify="required" autocomplete="off" class="layui-input">'+
+                        '\<\/div>'+
+                        '\<\/div>'+
+                        '\<\div class="layui-inline">'+
+                        '\<\label class="layui-form-label">实体中文名\<\/label>'+
+                        '\<\div class="layui-input-inline">'+
+                        '\<\input type="text" name="cnName" lay-verify="required" autocomplete="off" class="layui-input">'+
+                        '\<\/div>'+
+                        '\<\/div>'+
+                        '\<\/div>'+
+                        '\<\div class="layui-form-item">'+
+                        '\<\div class="layui-input-block">'+
+                        '@helper.CSRF.formField'+
+                        '<button class="layui-btn layui-btn-normal"  lay-submit>添加\<\/button>'+
+                        '<button type="reset" class="layui-btn layui-btn-primary">重置\<\/button>'+
+                        '\<\/div>'+
+                        '\<\/div>'+
+                        '\<\/form>'+
+                        '\<\/div>'
+                    });
+                });
+                $('#addEvent').on('click', function(){
+                    layer.open({
+                        type: 1,
+                        area: ['700px', '350px'],
+                        shadeClose: true, //点击遮罩关闭
+                        content: '\<\div style="padding:20px;">' +
+                        ' <form class="layui-form" action="/addEvent" method="post">'+
+                        ' <div class="layui-form-item">'+
+                        ' <div class="layui-inline">'+
+                        ' <label class="layui-form-label">事件中文名\<\/label>'+
+                        ' <div class="layui-input-inline">'+
+                        ' <input type="text" name="cnName" lay-verify="required" autocomplete="off" class="layui-input">'+
+                        ' </div>'+
+                        ' </div>'+
+                        ' <div class="layui-inline">'+
+                        ' <label class="layui-form-label">事件英文名\<\/label>'+
+                        ' <div class="layui-input-inline">'+
+                        ' <input type="text" name="enName" lay-verify="required" autocomplete="off" class="layui-input">'+
+                        ' </div>'+
+                        ' </div>'+
+                        ' </div>'+
+                        ' <div class="layui-form-item">'+
+                        ' <div class="layui-inline">'+
+                        ' <label class="layui-form-label">事件主实体</label>'+
+                        ' <div class="layui-input-inline">'+
+                        ' <select name="subjectId" lay-verify="required" lay-search="">'+
+                        ' <option value="">请选择</option>'+
+                        ' @for(info <-infos) {'+
+                        '@if(info.ttpye==db.model.RDFType.Entity){'+
+                        ' <option value="@{info.id}">@{info.cnName} </option>'+
+                        ' } }'+
+                        ' </select>'+
+                        '  </div>'+
+                        '  </div>'+
+                        ' <div class="layui-inline">'+
+                        ' <label class="layui-form-label">事件副实体</label>'+
+                        ' <div class="layui-input-inline">'+
+                        ' <select name="objectId" lay-verify="required" lay-search="">'+
+                        ' <option value="">请选择</option>'+
+                        ' @for(info <-infos) {'+
+                        '@if(info.ttpye==db.model.RDFType.Entity){'+
+                        ' <option value="@{info.id}">@{info.cnName} </option>'+
+                        ' } }'+
+                        ' </select>'+
+                        '   </div>'+
+                        '  </div>'+
+                        '  </div>'+
+                        '  <div class="layui-form-item">'+
+                        '   <div class="layui-input-block">'+
+                        '  @helper.CSRF.formField '+
+                        '  <button class="layui-btn layui-btn-warm" lay-submit>添加</button>'+
+                        '  <button id="init" type="reset" class="layui-btn layui-btn-primary">重置</button>'+
+                        ' </div>'+
+                        ' </div>'+
+                        ' </form>'+
+                        '<script>'+
+                        'var oDiv = document.getElementById("init");'+
+                        'oDiv.click();'+
+                        '\<\/script>'+
+                        '\<\/div>'
+                    });
+                });
+                $('#addRelation').on('click', function(){
+                    layer.open({
+                        type: 1,
+                        area: ['700px', '350px'],
+                        shadeClose: true,
+                        content: '\<\div style="padding:20px;">' +
+                       ' <form class="layui-form" action="/addRelation" method="post">'+
+                       ' <div class="layui-form-item">'+
+                       ' <div class="layui-inline">'+
+                       ' <label class="layui-form-label">关系中文名\<\/label>'+
+                       ' <div class="layui-input-inline">'+
+                       ' <input type="text" name="cnName" lay-verify="required" autocomplete="off" class="layui-input">'+
+                       ' </div>'+
+                       ' </div>'+
+                       ' <div class="layui-inline">'+
+                       ' <label class="layui-form-label">关系英文名\<\/label>'+
+                       ' <div class="layui-input-inline">'+
+                       ' <input type="text" name="enName" lay-verify="required" autocomplete="off" class="layui-input">'+
+                       ' </div>'+
+                       ' </div>'+
+                       ' </div>'+
+                       ' <div class="layui-form-item">'+
+                       ' <div class="layui-inline">'+
+                       ' <label class="layui-form-label">关系主实体</label>'+
+                       ' <div class="layui-input-inline">'+
+                       ' <select name="subjectId" lay-verify="required" lay-search="">'+
+                       ' <option value="">请选择</option>'+
+                        ' @for(info <-infos) {'+
+                        '@if(info.ttpye==db.model.RDFType.Entity){'+
+                        ' <option value="@{info.id}">@{info.cnName} </option>'+
+                        ' } }'+
+                       ' </select>'+
+                       '  </div>'+
+                       '  </div>'+
+                       ' <div class="layui-inline">'+
+                       ' <label class="layui-form-label">关系副实体</label>'+
+                       ' <div class="layui-input-inline">'+
+                       ' <select name="objectId" lay-verify="required" lay-search="">'+
+                       ' <option value="">请选择</option>'+
+                        ' @for(info <-infos) {'+
+                        '@if(info.ttpye==db.model.RDFType.Entity){'+
+                        ' <option value="@{info.id}">@{info.cnName} </option>'+
+                        ' } }'+
+                       ' </select>'+
+                       '   </div>'+
+                       '  </div>'+
+                       '  </div>'+
+                       '  <div class="layui-form-item">'+
+                       '   <div class="layui-input-block">'+
+                       '  @helper.CSRF.formField '+
+                       '  <button class="layui-btn layui-btn-danger" lay-submit>添加</button>'+
+                       '  <button id="init" type="reset" class="layui-btn layui-btn-primary">重置</button>'+
+                       ' </div>'+
+                       ' </div>'+
+                       ' </form>'+
+                        '<script>'+
+                        'var oDiv = document.getElementById("init");'+
+                        'oDiv.click();'+
+                        '\<\/script>'+
+                        '</div>'
+                    });
+                });
+            });
+
+            layui.use('table', function(){
+                var table = layui.table;
+
+                //监听单元格编辑
+                table.on('edit(tar)', function(obj){
+                    var value = obj.value //得到修改后的值
+                            ,data = obj.data //得到所在行所有键值
+                            ,field = obj.field; //得到字段
+                    layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);
+                });
+
+
+                table.on('tool(tar)', function(obj){
+                    var data = obj.data;
+                    if(obj.event === 'del'){
+                        layer.confirm('真的删除行么', function(index){
+                            obj.del();
+                            layer.close(index);
+                        });
+                    }
+                });
+
+
+            });
+
+    </script>
+
+
+}

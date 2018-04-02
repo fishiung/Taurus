@@ -1,0 +1,217 @@
+@(infos: Seq[db.model.OriginAttr],tables: Seq[db.model.TargetTable],rules:Seq[(rule.base.Rule,Int)])(implicit request: RequestHeader)
+
+@main("原始字段") {
+
+
+    <div class="layui-btn-group demoTable">
+      <button class="layui-btn layui-btn-primary layui-icon" data-type="getCheckData" style="border:0;font-size: 20px;color: #1E9FFF;" >&#xe609;</button>
+    </div>
+
+    @if(!infos.isEmpty){
+        <input id="ootId" type="hidden" name="otId" value="@{infos(0).otId}">
+    }
+    <table class="layui-table" lay-data="{id:'tar'}" lay-filter="tar">
+        <thead>
+            <tr>
+                <th lay-data="{type:'checkbox'}"></th>
+                <th lay-data="{field:'op', width:80}">操作</th>
+                <th lay-data="{field:'id', width:80,sort: true}">ID</th>
+                <th lay-data="{field:'taId',align:'center', width:100}">目标字段ID</th>
+                <th lay-data="{field:'enName',align:'center', cellMinWidth:130}">原始字段名</th>
+                <th lay-data="{field:'atype',align:'center',Width: 80}">字段类型</th>
+                <th lay-data="{field:'isPK', align:'center',width:100}">主键</th>
+                <th lay-data="{field:'sample1',cellMinWidth:180}">样例数据1</th>
+                <th lay-data="{field:'sample2',cellMinWidth:180}">样例数据2</th>
+                <th lay-data="{field:'sample3',cellMinWidth:180}">样例数据3</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        @for(info <- infos) {
+            <tr>
+                <td></td>
+                @if(info.taId == -1){
+                <td><button id="@{info.id}" onclick="dianji(this);" class="a layui-btn layui-btn-primary layui-btn-xs layui-icon" style="border:0; font-size: 20px;color: #1E9FFF;">&#xe67c;</button></td>
+                }else{
+                <td><a class="layui-btn layui-btn-primary layui-btn-xs layui-icon" style="border:0;font-size: 20px;color: #2F4056;">&#xe611;</a></td>
+                }
+                <td>@{info.id}</td>
+                 @if(info.taId == -1){
+                    <td>-</td>
+                 }else{
+                      <td>@{info.taId}</td>
+                 }
+                <td>@{info.enName}</td>
+                <td>@{info.atype}</td>
+                <td>@{info.isPK}<span style="display: none">@{info.taId}</span></td>
+                <td>@{info.sample1}</td>
+                <td>@{info.sample2}</td>
+                <td>@{info.sample3}</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+
+    <button  class="layui-disabled" style="display: none" >aa</button>
+
+    <script>
+    function dianji(item){
+        var orId = item.id;
+        layui.use('layer', function(){
+            var layer = layui.layer;
+            layer.open({
+                 title: '<i class="layui-icon" style="font-size: 25px; color: #009688;">&#xe6b2;</i>',
+                type: 1,
+                area: ['720px', '550px'],
+                shadeClose: true, //点击遮罩关闭
+                 content: '\<\div style="padding:20px;">' +
+                            '<form class="layui-form" action="/addTargetAttr" method="post">'+
+                            '<div class="layui-form-item">'+
+                            '<div class="layui-inline">'+
+                            '<label class="layui-form-label">字段中文名</label>'+
+                            '<div class="layui-input-inline">'+
+                            '<input type="text" name="cnName" lay-verify="required" autocomplete="off" class="layui-input">'+
+                            '</div>'+
+                            '</div>'+
+                            '<div class="layui-inline">'+
+                            '<label class="layui-form-label">字段英文名</label>'+
+                            '<div class="layui-input-inline">'+
+                            '<input type="text" name="enName" lay-verify="required" autocomplete="off" class="layui-input">'+
+                            '<input id="orId" type="hidden" name="orId" value="'+orId+'">'+
+                            '<input id="otId" type="hidden" name="otId" value="">'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '<div class="layui-form-item">'+
+                            '<div class="layui-inline">'+
+                            '<label class="layui-form-label">目标表</label>'+
+                            '<div class="layui-input-inline">'+
+                            '<select name="ttId" lay-verify="required" lay-search="">'+
+                            '<option value="">请选择</option>'+
+                            ' @for(table <-tables) {'+
+                            '<option value="@{table.id}">@{table.cnName} </option> '+
+                            '}'+
+                            '</select>'+
+                            '</div>'+
+                            '</div>'+
+                            '<div class="layui-inline">'+
+                            '<label class="layui-form-label">字段类型</label>'+
+                            '<div class="layui-input-inline">'+
+                            '<select name="atype" lay-verify="required" lay-search="">'+
+                            '<option value="String" selected>String</option>'+
+                            '<option value="Time">Time</option>'+
+                            '<option value="Geo">Geo</option>'+
+                            '</select>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '<div class="layui-form-item">'+
+                            '<label class="layui-form-label">字段属性</label>'+
+                            '<div class="layui-input-block">'+
+                            '<input type="checkbox" name="isPK" value="1" title="主键">'+
+                            '<input type="checkbox" name="isMP" value="1" title="主属性">'+
+                            '<input type="checkbox" name="isMultValue" value="1" title="多值">'+
+                            '<input type="checkbox" name="isLongValue" value="1" title="长字符串">'+
+                            '</div>'+
+                            '</div>'+
+                            '<div class="layui-form-item">'+
+                            '<label class="layui-form-label">规则指定</label>'+
+                             '<div class="layui-input-inline">'+
+                            '<input type="text" name="rules" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">'+
+                            '\<\/div>'+
+                            '<div class="layui-input-inline">'+
+                            '  <select name="impl" >'+
+                            '<option value="">规则详情</option>'+
+                            ' <optgroup label="校验类">'+
+                             ' @for(rule <-rules) {'+
+                             '<option disabled="disabled">@{rule._2+" "}@{rule._1.name} </option> '+
+                             '}'+
+                            ' </optgroup >'+
+                            ' <optgroup label="转换类" >'+
+                            ' <option disabled="disabled">dasd</option>'+
+                            ' </optgroup>'+
+                            ' </select>'+
+                            '</div>'+
+                            '</div>'+
+                            '<div class="layui-form-item">'+
+                            '<div class="layui-input-block">'+
+                            '@helper.CSRF.formField '+
+                            '<button class="layui-btn" lay-submit>添加</button>'+
+                            '<button id="init" type="reset" class="layui-btn layui-btn-primary">重置</button>'+
+                            '</div>'+
+                            '</div>'+
+                            '</form>'+
+                            '<script>'+
+                            'var oDiv = document.getElementById("init");'+
+                            'oDiv.click();'+
+                            'var otId = document.getElementById("ootId").value;'+
+                            'document.getElementById("otId").value=otId;'+
+                            '\<\/script>'+
+                            '\<\/div>'
+
+            });
+        });
+    }
+
+             layui.use('table', function(){
+                  var table = layui.table;
+                 var $ = layui.$, active = {
+                    getCheckData: function(){ //获取选中数据
+                      var checkStatus = table.checkStatus('tar')
+                      ,data = checkStatus.data;
+                      var res = "";
+                      for(var i= 0;i<data.length;i++){
+                        res+=data[i]["taId"]+",";
+                      }
+                      res=res.substring(0,res.length-1);
+                      if(res == "") {
+                          layer.msg("啥也没选啊");
+                      } else if(res.indexOf("-")>=0){
+                          layer.msg("包含没有映射的字段啊");
+                      }else{
+                        layer.open({
+                               title: '<i class="layui-icon" style="font-size: 25px; color: #009688;">&#xe6b2;</i>',
+                                 type: 1,
+                                 area: ['260px', '220px'],
+                             shadeClose: true, //点击遮罩关闭
+                              content: '\<\div style="padding:20px;">' +
+                               '<form class="layui-form" action="/addTargetAttrs" method="post">'+
+                                 '  <div class="layui-form-item">'+
+                                '<input id="taIds" type="hidden" name="taIds" value="'+res+'">'+
+                                '</div>'+
+                               '  <div class="layui-form-item">'+
+                               '  <div class="layui-input-inline">'+
+                              '<select name="ttId" lay-verify="required" lay-search="">'+
+                               '   <option value="">请选择</option>'+
+                                ' @for(table <-tables) {'+
+                            '<option value="@{table.id}">@{table.cnName} </option> '+
+                            '}'+
+                               '     </select>'+
+                               '  </div>'+
+                               '  </div>'+
+                                '<div class="layui-form-item">'+
+                                 '@helper.CSRF.formField '+
+                              '<button class="layui-btn" lay-submit>添加</button>'+
+                            '<button id="init" type="reset" class="layui-btn layui-btn-primary" style="display: none" >重置</button>'+
+                            '</div>'+
+                                '</form>'+
+                                 '<script>'+
+                            'var oDiv = document.getElementById("init");'+
+                            'oDiv.click();'+
+                            '\<\/script>'+
+                                 '\<\/div>'
+                         });
+                      }
+                    }
+                  };
+
+                 $('.demoTable .layui-btn').on('click', function(){
+                   var type = $(this).data('type');
+                    active[type] ? active[type].call(this) : '';
+                  });
+            });
+
+    </script>
+
+}

@@ -1,0 +1,24 @@
+@()
+
+@main("目标视图") {
+
+
+    <style type="text/css">
+            .kong{  width: 1000px; height: 200px; border: 0px ;}
+            .centered {
+                 display: -webkit-flex;
+                 -webkit-justify-content: center;
+                 -webkit-align-items: center;
+            }
+    </style>
+
+    <div class="kong"></div>
+    <div class="centered">
+        <a href="/show/Entity"><img src="@routes.Assets.at("img/1.png")" width="260" height="260" /></a>
+        <img src="@routes.Assets.at("img/null.png")" width="100" height="260" />
+        <a href="/show/Event" ><img src="@routes.Assets.at("img/2.png")" width="260" height="280" /></a>
+        <img src="@routes.Assets.at("img/null.png")" width="100" height="260" />
+        <a href="/show/Relation" ><img src="@routes.Assets.at("img/3.png")" width="260" height="280" /></a>
+    </div>
+
+}

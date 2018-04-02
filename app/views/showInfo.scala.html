@@ -1,0 +1,32 @@
+@(infos: Seq[db.model.DataSourceInfo])
+
+@main("数据源") {
+
+
+
+
+
+    <table class="layui-table">
+        <colgroup>
+            <col width="150">
+            <col width="200">
+            <col>
+        </colgroup>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>数据源类型</th>
+                <th>URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(info <- infos){
+                    <tr>
+                    <td>@{info.id}</td>
+                    <td>@{info.dtype}</td>
+                        <td><a href="/showInfo/@{info.id}" ><span style="color: #2232f5;">@{info.url}</span></a></td>
+                    </tr>
+            }
+        </tbody>
+    </table>
+}

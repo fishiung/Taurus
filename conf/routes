@@ -1,0 +1,20 @@
+
+GET         /                                      controllers.MainController.home
+GET         /infoForm                              controllers.MainController.infoForm
+GET         /showInfo                              controllers.MainController.showDataSourceInfo
+GET         /showInfo/:dsId                        controllers.MainController.showOriginTableInfo(dsId:Int)
+GET         /showInfo/oa/:otId                     controllers.MainController.showOriginAttrInfo(otId:Int)
+GET         /showInfo/ta/:ttId                     controllers.MainController.showTargetAttrInfo(ttId:Int,tn:String,t:String)
+GET         /show/$t<Entity|Event|Relation>        controllers.MainController.showTargetTablesbyType(t:String)
+
+
+POST        /addEntity                             controllers.MainController.addEntity
+POST        /addEvent                              controllers.MainController.addEvent
+POST        /addRelation                           controllers.MainController.addRelation
+POST        /addInfo                               controllers.MainController.addDataSourceInfo
+POST        /addTargetAttr                         controllers.MainController.addTargetAttr
+POST        /addTargetAttrs                         controllers.MainController.addTargetAttrs
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                          controllers.Assets.at(path="/public", file)
+
+      

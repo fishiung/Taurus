@@ -1,0 +1,37 @@
+@()(implicit request: RequestHeader)
+
+@import helper._
+@main("") {
+
+    <form class="layui-form" action="/addInfo" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">数据源URL</label>
+            <div class="layui-input-block">
+                <input type="text" name="url" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="username" lay-verify="required" autocomplete="off" class="layui-input" value="root">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">密码</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="password" lay-verify="required" autocomplete="off" class="layui-input" value="root">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                @CSRF.formField
+                <button class="layui-btn" lay-submit>立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+}
